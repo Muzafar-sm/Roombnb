@@ -3,6 +3,7 @@
 A modern hotel booking platform inspired by Airbnb but with a unique design focused on digital nomads and younger travelers. Built with Next.js, Node.js, and MongoDB.
 🌐[Live Server](https://roombnb.vercel.app/)
 
+ ## When u guys open the live server ,there will be The "dangerous site" warning you're seeing in Google Chrome means that Google has flagged your website as potentially harmful. But its becoz i haven't added SSL/Https config becoz its requires spening money 😑. Dont worry just traverse through the site u dont need to pay and all 😉😂
 ## Features
 
 - 🏠 Property listings with glassmorphism design
