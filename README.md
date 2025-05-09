@@ -1,6 +1,7 @@
 # NomadStay - Modern Hotel Booking Platform
 
 A modern hotel booking platform inspired by Airbnb but with a unique design focused on digital nomads and younger travelers. Built with Next.js, Node.js, and MongoDB.
+🌐[Live Server](https://roombnb.vercel.app/)
 
 ## Features
 
