@@ -1,6 +1,6 @@
 import express from 'express';
 import Stripe from 'stripe';
-import { auth } from '../middleware/auth';
+import { auth, AuthRequest } from '../middleware/auth';
 
 // Make sure the environment variables are loaded
 const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
@@ -14,7 +14,7 @@ const router = express.Router();
 // Initialize Stripe with your secret key
 const stripe = new Stripe(stripeSecretKey);
 
-router.post('/create-payment-intent', auth, async (req, res) => {
+router.post('/create-payment-intent', auth, async (req: AuthRequest, res) => {
   try {
     const { amount } = req.body;
     
@@ -30,7 +30,7 @@ router.post('/create-payment-intent', auth, async (req, res) => {
         enabled: true,
       },
       metadata: {
-        userId: req.user._id.toString(),
+        userId: req.user?._id.toString() ?? null,
       },
     });
 

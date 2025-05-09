@@ -68,7 +68,7 @@ router.post("/", auth, checkRole(["host", "admin"]), async (req, res) => {
   try {
     const property = new Property({
       ...req.body,
-      host: req.user._id,
+      host: (req as any).user._id,
     });
 
     await property.save();
@@ -89,8 +89,8 @@ router.put("/:id", auth, async (req, res) => {
 
     // Check if user is the host or admin
     if (
-      property.host.toString() !== req.user._id.toString() &&
-      req.user.role !== "admin"
+      property.host.toString() !== (req as any).user._id.toString() &&
+      (req as any).user.role !== "admin"
     ) {
       return res.status(403).json({ error: "Not authorized" });
     }
@@ -118,8 +118,8 @@ router.delete("/:id", auth, async (req, res) => {
 
     // Check if user is the host or admin
     if (
-      property.host.toString() !== req.user._id.toString() &&
-      req.user.role !== "admin"
+      property.host.toString() !== (req as any).user._id.toString() &&
+      (req as any).user.role !== "admin"
     ) {
       return res.status(403).json({ error: "Not authorized" });
     }

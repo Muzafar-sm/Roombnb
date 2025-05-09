@@ -2,8 +2,13 @@ import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import User from "../models/User";
 
-interface AuthRequest extends Request {
-  user?: any;
+// Export the interface so it can be imported in other files
+export interface AuthRequest extends Request {
+  user?: {
+    _id: string;
+    role: string;
+    // Add other user properties you need
+  };
 }
 
 export const auth = async (
@@ -25,7 +30,13 @@ export const auth = async (
       throw new Error();
     }
 
-    req.user = user;
+    // Transform the MongoDB document to match our type definition
+    req.user = {
+      _id: (user as any)._id.toString(),
+      role: user.role
+      // Add other properties you need
+    };
+    
     next();
   } catch (error) {
     res.status(401).json({ error: "Please authenticate." });
@@ -42,6 +53,7 @@ export const checkRole = (roles: string[]) => {
       return res.status(403).json({ error: "Access denied." });
     }
 
-    next();
+    // Make sure to add a return statement at the end
+    return next();
   };
-}; 
+};

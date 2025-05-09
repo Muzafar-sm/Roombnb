@@ -1,7 +1,8 @@
 import express from "express";
 import jwt from "jsonwebtoken";
 import User from "../models/User";
-import { auth } from "../middleware/auth";
+// Import the AuthRequest interface
+import { auth, AuthRequest } from "../middleware/auth";
 import crypto from "crypto";
 
 const router = express.Router();
@@ -35,7 +36,7 @@ router.post("/register", async (req, res) => {
       { expiresIn: "7d" }
     );
 
-    res.status(201).json({
+    return res.status(201).json({
       token,
       user: {
         id: user._id,
@@ -46,7 +47,7 @@ router.post("/register", async (req, res) => {
       },
     });
   } catch (error) {
-    res.status(400).json({ error: "Registration failed" });
+    return res.status(400).json({ error: "Registration failed" });
   }
 });
 
@@ -81,7 +82,7 @@ router.put("/update-role", auth, async (req: any, res) => {
       avatar: user.avatar,
     });
   } catch (error) {
-    res.status(500).json({ error: "Server error" });
+   return res.status(500).json({ error: "Server error" });
   }
 });
 
@@ -120,17 +121,17 @@ router.post("/login", async (req, res) => {
       },
     });
   } catch (error) {
-    res.status(400).json({ error: "Login failed" });
+    return res.status(400).json({ error: "Login failed" });
   }
 });
 
 // Get current user
-router.get("/me", auth, async (req, res) => {
+router.get("/me", auth, async (req: AuthRequest, res) => {
   try {
-    const user = await User.findById(req.user._id).select("-password");
+    const user = await User.findById(req.user?._id).select("-password");
     res.json(user);
   } catch (error) {
-    res.status(500).json({ error: "Server error" });
+    return res.status(500).json({ error: "Server error" });
   }
 });
 
@@ -159,23 +160,23 @@ router.post("/forgot-password", async (req, res) => {
     // For this example, we'll just return the token in the response
     // In production, you should use a proper email service
     
-    res.status(200).json({ 
+    return res.status(200).json({ 
       message: "If your email is registered, you will receive a password reset link",
       // Remove this in production, only for testing
       resetToken: resetToken 
     });
   } catch (error) {
-    res.status(500).json({ error: "Server error" });
+    return res.status(500).json({ error: "Server error" });
   }
 });
 
 // Change Password - For authenticated users
-router.post("/change-password", auth, async (req, res) => {
+router.post("/change-password", auth, async (req: AuthRequest, res) => {
   try {
     const { currentPassword, newPassword } = req.body;
     
     // Find user by ID (from auth middleware)
-    const user = await User.findById(req.user._id);
+    const user = await User.findById(req.user?._id);
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
@@ -191,9 +192,9 @@ router.post("/change-password", auth, async (req, res) => {
     
     await user.save();
     
-    res.status(200).json({ message: "Password has been changed successfully" });
+    return res.status(200).json({ message: "Password has been changed successfully" });
   } catch (error) {
-    res.status(500).json({ error: "Server error" });
+   return res.status(500).json({ error: "Server error" });
   }
 });
 // Reset Password - Process the reset
@@ -218,9 +219,9 @@ router.post("/reset-password", async (req, res) => {
     
     await user.save();
     
-    res.status(200).json({ message: "Password has been reset successfully" });
+   return res.status(200).json({ message: "Password has been reset successfully" });
   } catch (error) {
-    res.status(500).json({ error: "Server error" });
+    return res.status(500).json({ error: "Server error" });
   }
 });
 
@@ -247,7 +248,7 @@ router.get("/verify", auth, async (req: any, res) => {
       }
     });
   } catch (error) {
-    res.status(500).json({ error: "Server error" });
+    return res.status(500).json({ error: "Server error" });
   }
 });
 
@@ -282,7 +283,7 @@ router.put("/update-profile", auth, async (req: any, res) => {
       avatar: user.avatar,
     });
   } catch (error) {
-    res.status(500).json({ error: "Server error" });
+    return res.status(500).json({ error: "Server error" });
   }
 });
 
@@ -315,7 +316,7 @@ router.post("/refresh-token", auth, async (req: any, res) => {
       },
     });
   } catch (error) {
-    res.status(500).json({ error: "Server error" });
+    return res.status(500).json({ error: "Server error" });
   }
 });
 
