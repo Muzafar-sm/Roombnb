@@ -67,13 +67,13 @@ export default function PropertyDetailPage() {
           
           try {
             errorData = JSON.parse(errorText);
-            if (errorData.error) {
+            if ((errorData as {error?: string}).error) {
               if (response.status === 400) {
                 errorMessage = "Invalid property ID format. Please use a valid property ID.";
               } else if (response.status === 404) {
                 errorMessage = "Property not found. It may have been removed.";
               } else {
-                errorMessage = errorData.error;
+                errorMessage = (errorData as {error: string}).error;
               }
             }
           } catch (e) {
@@ -86,9 +86,9 @@ export default function PropertyDetailPage() {
         const data = await response.json();
         console.log("Received property details:", data);
         setProperty(data);
-      } catch (err: any) {
+      } catch (err: Error | unknown) {
         console.error("Error fetching property details:", err);
-        setError(err.message || "Failed to load property details");
+        setError(err instanceof Error ? err.message : "Failed to load property details");
       } finally {
         setLoading(false);
       }

@@ -5,14 +5,42 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import Navbar from "@/components/Navbar";
 
+// Define a type for the form data
+interface FormData {
+  title: string;
+  description: string;
+  price: string;
+  location: {
+    city: string;
+    country: string;
+    coordinates: {
+      lat: number;
+      lng: number;
+    };
+  };
+  images: string[];
+  amenities: string[];
+  maxGuests: string;
+  bedrooms: string;
+  bathrooms: string;
+  [key: string]: string | number | string[] | {
+    city: string;
+    country: string;
+    coordinates: {
+      lat: number;
+      lng: number;
+    };
+  };
+}
+
 export default function CreatePropertyPage() {
   const router = useRouter();
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   
-  // Form state
-  const [formData, setFormData] = useState({
+  // Form state with type annotation
+  const [formData, setFormData] = useState<FormData>({
     title: "",
     description: "",
     price: "",
@@ -52,19 +80,23 @@ export default function CreatePropertyPage() {
     );
   }
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     
     // Handle nested properties
     if (name.includes(".")) {
       const [parent, child] = name.split(".");
-      setFormData({
-        ...formData,
-        [parent]: {
-          ...formData[parent],
-          [child]: value,
-        },
-      });
+      
+      if (parent === "location") {
+        // Handle location specifically since we know its structure
+        setFormData({
+          ...formData,
+          location: {
+            ...formData.location,
+            [child]: value,
+          },
+        });
+      }
     } else {
       setFormData({
         ...formData,
@@ -73,7 +105,7 @@ export default function CreatePropertyPage() {
     }
   };
 
-  const handleImageChange = (index, value) => {
+  const handleImageChange = (index: number, value: string) => {
     const updatedImages = [...formData.images];
     updatedImages[index] = value;
     setFormData({
@@ -89,7 +121,7 @@ export default function CreatePropertyPage() {
     });
   };
 
-  const handleAmenityChange = (index, value) => {
+  const handleAmenityChange = (index: number, value: string) => {
     const updatedAmenities = [...formData.amenities];
     updatedAmenities[index] = value;
     setFormData({
@@ -105,7 +137,7 @@ export default function CreatePropertyPage() {
     });
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
     setError("");
@@ -145,7 +177,7 @@ export default function CreatePropertyPage() {
       const data = await response.json();
       router.push(`/properties/${data._id}`);
     } catch (err) {
-      setError(err.message || "Something went wrong");
+      setError(err instanceof Error ? err.message : "Something went wrong");
     } finally {
       setLoading(false);
     }

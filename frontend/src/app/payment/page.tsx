@@ -1,13 +1,35 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import { useAuth } from "@/contexts/AuthContext";
 import { PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { StripeProvider } from "@/contexts/StripeContext";
 
-function PaymentForm({ property, totalPrice, propertyId, nights }) {
+// Define an interface for the property object
+interface Property {
+  _id: string;
+  title: string;
+  price: number;
+  images?: string[];
+  location?: {
+    city: string;
+    country: string;
+  };
+  // Add other property fields as needed
+}
+
+// Define the props interface for the PaymentForm component
+interface PaymentFormProps {
+  property: Property;
+  totalPrice: number;
+  propertyId: string;
+  nights: number;
+}
+
+
+function PaymentForm({ totalPrice, propertyId, nights }: PaymentFormProps) {
   const stripe = useStripe();
   const elements = useElements();
   const [loading, setLoading] = useState(false);
@@ -15,7 +37,7 @@ function PaymentForm({ property, totalPrice, propertyId, nights }) {
   const [isElementsReady, setIsElementsReady] = useState(false);
   const router = useRouter();
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     
     if (!stripe || !elements) {
@@ -61,7 +83,7 @@ function PaymentForm({ property, totalPrice, propertyId, nights }) {
       alert("Payment successful! Your booking has been confirmed.");
       router.push("/");
     } catch (err) {
-      setError(err.message || "Payment processing failed");
+      setError(err instanceof Error ? err.message : "Payment processing failed");
     } finally {
       setLoading(false);
     }
@@ -101,11 +123,12 @@ function PaymentForm({ property, totalPrice, propertyId, nights }) {
   );
 }
 
-export default function PaymentPage() {
+// Create a client component that uses useSearchParams
+function PaymentPageContent() {
   const searchParams = useSearchParams();
-  const { user } = useAuth();
+
   const [propertyId, setPropertyId] = useState("");
-  const [property, setProperty] = useState(null);
+  const [property, setProperty] = useState<Property | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [nights, setNights] = useState(1);
@@ -122,7 +145,7 @@ export default function PaymentPage() {
     fetchPropertyDetails(id);
   }, [searchParams]);
 
-  const fetchPropertyDetails = async (id) => {
+  const fetchPropertyDetails = async (id: string) => {
     try {
       const response = await fetch(`http://localhost:5000/api/properties/${id}`);
       
@@ -133,13 +156,13 @@ export default function PaymentPage() {
       const data = await response.json();
       setProperty(data);
     } catch (err) {
-      setError(err.message || "Failed to load property details");
+      setError(err instanceof Error ? err.message : "Failed to load property details");
     } finally {
       setLoading(false);
     }
   };
 
-  const handleNightsChange = (e) => {
+  const handleNightsChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setNights(parseInt(e.target.value) || 1);
   };
 
@@ -192,8 +215,8 @@ export default function PaymentPage() {
                   )}
                   <div>
                     <h3 className="font-medium text-gray-800">{property.title}</h3>
-                    <p className="text-gray-600 text-sm">
-                      {property.location.city}, {property.location.country}
+                    <p className="text-gray-600 text-sm" data-testid="location-text">
+                      {property.location?.city || 'City'}, {property.location?.country || 'Country'}
                     </p>
                   </div>
                 </div>
@@ -243,5 +266,21 @@ export default function PaymentPage() {
         </div>
       </main>
     </>
+  );
+}
+
+// Main component with Suspense boundary
+export default function PaymentPage() {
+  return (
+    <Suspense fallback={
+      <>
+        <Navbar />
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+        </div>
+      </>
+    }>
+      <PaymentPageContent />
+    </Suspense>
   );
 }

@@ -48,8 +48,8 @@ export default function ProfilePage() {
     try {
       await updateRole(newRole);
       setMessage(`Your account has been updated to ${newRole} status`);
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
       setLoading(false);
     }
@@ -69,8 +69,8 @@ export default function ProfilePage() {
         avatar: formData.avatar,
       });
       setMessage("Profile updated successfully");
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
       setLoading(false);
     }

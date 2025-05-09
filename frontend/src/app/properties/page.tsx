@@ -53,9 +53,10 @@ export default function PropertiesPage() {
       const data = await response.json();
       console.log("Properties fetched successfully:", data.length);
       setProperties(data);
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : "Failed to connect to server";
       console.error("Error details:", err);
-      setError(err.message || "Failed to connect to server");
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }

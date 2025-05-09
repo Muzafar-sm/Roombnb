@@ -9,6 +9,8 @@ interface User {
   firstName: string;
   lastName: string;
   role: string;
+  phoneNumber?: string;
+  avatar?: string;
 }
 
 interface AuthContextType {
@@ -18,7 +20,7 @@ interface AuthContextType {
   logout: () => void;
   forgotPassword: (email: string) => Promise<void>;
   resetPassword: (token: string, password: string) => Promise<void>;
-  updateProfile: (userData: any) => Promise<void>;
+  updateProfile: (userData: Partial<Omit<User, 'id' | 'role'>>) => Promise<void>;
   updateRole: (role: string) => Promise<void>;
   isLoading: boolean;
 }
@@ -31,7 +33,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    let isMounted = true;
     const token = localStorage.getItem('token');
+    
     if (token) {
       // Verify token and get user data
       fetch(`${API_URL}/api/auth/verify`, {
@@ -41,17 +45,22 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       })
       .then(res => res.json())
       .then(data => {
-        setUser(data.user);
+        if (isMounted) setUser(data.user);
       })
       .catch(() => {
-        localStorage.removeItem('token');
+        if (isMounted) localStorage.removeItem('token');
       })
       .finally(() => {
-        setIsLoading(false);
+        if (isMounted) setIsLoading(false);
       });
     } else {
       setIsLoading(false);
     }
+    
+    // Cleanup function
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   // Define all functions inside the component where setUser is available
