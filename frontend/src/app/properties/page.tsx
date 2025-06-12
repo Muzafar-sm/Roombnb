@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import Navbar from "@/components/Navbar";
+import API_URL from "@/utils/api";
 
 interface Property {
   _id: string;
@@ -44,7 +45,7 @@ export default function PropertiesPage() {
   const fetchProperties = async () => {
     try {
       console.log("Attempting to fetch properties...");
-      const response = await fetch("http://localhost:5000/api/properties");
+      const response = await fetch(`${API_URL}/api/properties`);
       
       if (!response.ok) {
         throw new Error(`Failed to fetch properties: ${response.status} ${response.statusText}`);

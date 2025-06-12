@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import Navbar from "@/components/Navbar";
 import PropertyCard from "@/components/PropertyCard";
+import API_URL from "@/utils/api";
 
 // Define Property interface
 interface Property {
@@ -80,7 +81,7 @@ export default function Home() {
   const fetchAllLocations = async () => {
     try {
       console.log("Fetching locations from API...");
-      const response = await fetch("http://localhost:5000/api/properties");
+      const response = await fetch(`${API_URL}/api/properties`);
       
       if (!response.ok) {
         throw new Error("Failed to fetch locations");
@@ -144,7 +145,7 @@ export default function Home() {
   const fetchProperties = async () => {
     try {
       setLoading(true);
-      const response = await fetch("http://localhost:5000/api/properties");
+      const response = await fetch(`${API_URL}/api/properties`);
       
       if (!response.ok) {
         throw new Error("Failed to fetch properties");

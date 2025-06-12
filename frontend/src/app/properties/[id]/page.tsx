@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import { useParams } from "next/navigation";
 import Navbar from "@/components/Navbar";
+import API_URL from "@/utils/api";
 
 interface Property {
   _id: string;
@@ -50,7 +51,7 @@ export default function PropertyDetailPage() {
           throw new Error("Property ID is missing");
         }
         
-        const apiUrl = `http://localhost:5000/api/properties/${id}`;
+        const apiUrl = `${API_URL}/api/properties/${id}`;
         console.log("API URL:", apiUrl);
         
         const response = await fetch(apiUrl);

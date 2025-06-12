@@ -3,6 +3,7 @@
 import { ReactNode, useState, useEffect } from 'react';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
+import API_URL from '@/utils/api';
 
 // Your publishable key - safe to use in frontend code
 const stripePromise = loadStripe('pk_test_51RMSo2H0RP1nZqUwZRcUBW3Et9WTlgJkB3XIB3oCqWZUX8eAlnU9zDS1fd503rogoWHNnf1Bp6JDxMbJPBd1syJJ00E4Ifm52d');
@@ -38,7 +39,7 @@ export function StripeProvider({ children, amount }: StripeProviderProps) {
     console.log("Creating payment intent for amount:", amountInCents);
     
     // Create a PaymentIntent as soon as the page loads
-    fetch("http://localhost:5000/api/payment/create-payment-intent", {
+    fetch(`${API_URL}/api/payment/create-payment-intent`, {
       method: "POST",
       headers: { 
         "Content-Type": "application/json",

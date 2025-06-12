@@ -116,7 +116,7 @@ router.delete("/:id", auth, async (req, res) => {
       return res.status(404).json({ error: "Property not found" });
     }
 
-    // Check if user is the host or admin
+    // Check if user is the host or admin 
     if (
       property.host.toString() !== (req as any).user._id.toString() &&
       (req as any).user.role !== "admin"

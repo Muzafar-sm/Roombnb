@@ -6,6 +6,7 @@ import Navbar from "@/components/Navbar";
 import { useAuth } from "@/contexts/AuthContext";
 import { PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { StripeProvider } from "@/contexts/StripeContext";
+import API_URL from "@/utils/api";
 
 // Define an interface for the property object
 interface Property {
@@ -61,7 +62,7 @@ function PaymentForm({ totalPrice, propertyId, nights }: PaymentFormProps) {
       }
       
       // Send booking info to your backend
-      const response = await fetch('http://localhost:5000/api/bookings', {
+      const response = await fetch(`${API_URL}/api/bookings`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
