@@ -25,7 +25,7 @@ app.use(cors(corsOptions));
 app.use(express.json());
 
 // Root route handler
-app.get('/', (req, res) => {
+app.get('/', (_req, res) => {
   res.json({ 
     message: 'Welcome to RoomBnB API',
     status: 'online',
@@ -39,7 +39,7 @@ app.use("/api/properties", propertyRoutes);
 app.use("/api/payment", paymentRoutes);
 
 // Error handling middleware (must be after routes)
-app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+app.use((err: any, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
   console.error('Error:', err);
   res.status(500).json({ 
     error: 'Something went wrong!',
